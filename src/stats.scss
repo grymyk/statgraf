@@ -1,0 +1,20 @@
+body {
+  text-align: center;
+}
+#plot {
+  height: 48px;
+  width: 144px;
+  font-size: 24px;
+  border: 2px solid #000;
+  margin: 20px 0 0;
+}
+
+#plot:hover {
+  background: rgba(221, 221, 221, 0.5);
+  cursor: pointer;
+}
+
+.footer {
+  text-align: right;
+  margin: 40px 20px 0;
+}
