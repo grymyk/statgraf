@@ -51,9 +51,6 @@ h3 {
   height: 40px;
 
   input {
-      display: block;
-      margin: 0;
-      padding: 0;
       cursor: pointer;
   }
 }
@@ -65,6 +62,7 @@ h3 {
 
 #output_holder {
   width: 129px;
+  margin: 0 auto;
 
   output {
     margin: 0;
@@ -75,7 +73,6 @@ h3 {
 
 #input_holder {
   overflow: hidden;
-  height: 50px;
   line-height: 20px;
   margin: 0;
   font-size: 14px;
