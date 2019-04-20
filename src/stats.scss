@@ -48,16 +48,17 @@ h3 {
   padding: 0;
   width: 139px;
   text-align: center;
-  height: 40px;
 
   input {
       cursor: pointer;
+      margin: 0;
+      padding: 0;
+      border: none;
   }
 }
 
 #input_range_holder {
   background: #ccf;
-  padding: 5px;
 }
 
 #output_holder {
@@ -73,7 +74,6 @@ h3 {
 
 #input_holder {
   overflow: hidden;
-  line-height: 20px;
   margin: 0;
   font-size: 14px;
 
