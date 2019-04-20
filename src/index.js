@@ -1,39 +1,37 @@
 'use strict';
 
-import {Stats} from "./stats";
-
-import './stats.scss';
+import {Stats} from "./stats.js";
 
 const config = {
     min: 0,
-    // max: 10,
-    size: 101
+    // max: 10
 };
+
+let size = 50;
 
 const stats = new Stats(config);
 
-/*let x = [2, 4, 6, 8, 10];
-let p = [0.25, 0.125, 0.25, 0.125, 0.25];
+function inputHandler(event) {
+    let numberN = +event.target.value;
+    output.innerHTML = numberN;
+    size = numberN;
 
-let data = {
-    value: x,
-    prob: p
-};*/
+    handlerClick(size);
+}
 
-function handlerClick() {
-    let data = stats.randomData;
+const sizer = document.getElementById('sizer');
+const output = sizer.getElementsByTagName('output')[0];
+
+sizer.addEventListener('input', inputHandler);
+
+function handlerClick(size) {
+    let data = stats.randomData(size);
 
     stats.plot(data);
     stats.average(data);
     stats.dispersion(data);
 }
 
-const btn = document.getElementById('plot');
+window.onload = () => handlerClick(size);
 
-btn.addEventListener('click', handlerClick);
-
-window.onload = () => {
-    handlerClick();
-};
-//btn.style.display = 'none';
-//handlerClick();
+handlerClick(size);

@@ -1,37 +1,51 @@
 'use strict';
 
+import {Drawer} from "./drawer.js";
+import './stats.scss';
+
 class Stats {
     constructor(props) {
-        let {min = 0, max = 10, size = 100} = props;
+        let {min = 0, max = 10} = props;
 
         this.min = min;
         this.max = max;
-        this.size = size;
 
         this.xScale = 1;
         this.yScale = 1;
 
-        this.canvas = null;
+        this.widthCanvas = 0;
+        this.heightCanvas = 0;
 
-        this.leftPadHorMark = 70;
-        this.bottomPadVerMark = 20;
+        this.leftPadHorMark = 50;
+        this.bottomPadVerMark = 0;
 
         this.sizeXMark = 0;
         this.sizeYMark = 0;
 
-        this.sizeXMarkUnit = 0;
-        this.sizeYMarkUnit = 0;
+        this.sizeXMarkUnit = 1;
+        this.sizeYMarkUnit = 1;
 
-        this.numberXMark = 5;
-        this.numberYMark = 5;
+        this.numberXMark = 6;
+        this.numberYMark = 4;
 
         this.init();
+    }
 
-        this.drawHorLine = this.drawHorLine.bind(this);
-        this.drawVertLine = this.drawVertLine.bind(this);
-        this.drawValueLine = this.drawValueLine.bind(this);
-        this.drawDispersia = this.drawDispersia.bind(this);
-        this.drawLabel = this.drawLabel.bind(this);
+    init() {
+        const canvas = document.getElementById('canvas');
+
+        let pad = 30;
+
+        this.widthCanvas = canvas.width - pad;
+        this.heightCanvas = canvas.height - pad;
+
+        const props = {
+            element: canvas,
+            width: this.widthCanvas,
+            height: this.heightCanvas,
+        };
+
+        this.drawer = new Drawer(props);
     }
 
     randomDouble0to1() {
@@ -75,6 +89,19 @@ class Stats {
         return this.fixed(result);
     }
 
+    getTextXPosition(text) {
+        const base = 10;
+        let digit = 2;
+
+        let size = Math.floor(text / base);
+
+        if (size === 0) {
+            digit = 1;
+        }
+
+        return digit ;
+    }
+
     average(data) {
         let {value, prob} = data;
 
@@ -91,67 +118,17 @@ class Stats {
         // let y = this.heightCanvas - this.bottomPadVerMark;
         let y = this.heightCanvas / 2;
 
-        this.drawPoint(x, y);
+        // this.drawer.drawPoint(x, y, 'blue');
+        this.drawer.drawPointSaveState(x, y, 'blue');
 
         let text = this.fixed(avr, 0);
-        this.drawLabelSaveState(text, x-8, y+15, '16px serif');
+        let shift = 4;
+
+        x -= this.getTextXPosition(text) * shift;
+
+        this.drawer.drawLabelSaveState(text, x, y+7, '16px serif');
 
         return avr;
-    }
-
-    saveState(fn) {
-        return (...args) => {
-            this.ctx.save();
-
-            fn(...args);
-
-            this.ctx.restore();
-        }
-    }
-
-    drawHorlineDisp(xAvr, yAvr, sigmaPX, style) {
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = style;
-
-        let xBegin = xAvr - sigmaPX;
-        let yBegin = yAvr;
-        let xEnd = xAvr + sigmaPX;
-        let yEnd = yAvr;
-
-        this.ctx.moveTo(xBegin, yBegin);
-        this.ctx.lineTo(xEnd, yEnd);
-
-        this.ctx.stroke();
-    }
-
-    drawVertMark(x, y) {
-        let size = 10;
-
-        this.ctx.moveTo(x, y - size);
-        this.ctx.lineTo(x, y + size);
-    }
-
-    drawVertMarks(xAvr, yAvr, sigmaPX, style) {
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = style;
-
-        let xRight = xAvr + sigmaPX;
-        let xLeft = xAvr - sigmaPX;
-
-        this.drawVertMark(xRight, yAvr);
-        this.drawVertMark(xLeft, yAvr);
-
-        this.ctx.stroke();
-    }
-
-    drawDispersia(xAvr, yAvr, sigmaPX, style) {
-        this.drawHorlineDisp(xAvr, yAvr, sigmaPX, style);
-
-        this.drawVertMarks(xAvr, yAvr, sigmaPX, style)
-    }
-
-    drawDispersiaSaveState(...args) {
-        this.saveState(this.drawDispersia)(...args)
     }
 
     dispersion(data) {
@@ -183,13 +160,15 @@ class Stats {
         let xAvr = (avrX - nShift) * xUnit + this.leftPadHorMark;
 
         // this.saveState(this.drawDispersia)(xAvr, yAvr, sigmaPX, 'blue');
-        this.drawDispersiaSaveState(xAvr, yAvr, sigmaPX, 'blue');
+        // this.drawer.drawDispersiaSaveState(xAvr, yAvr, sigmaPX, 'blue');
+        this.drawer.drawDispersia(xAvr, yAvr, sigmaPX);
 
         return sigma;
     }
 
-    get randomData() {
-        let size = this.size;
+    randomData(size) {
+        // let size = this.size;
+
         let value = [];
         let prob = Array(size).fill(0);
 
@@ -198,8 +177,6 @@ class Stats {
 
             value.push(x);
         }
-
-        
 
         let sum = 0;
         let last = size - 1;
@@ -229,18 +206,6 @@ class Stats {
         }
     }
 
-    drawPoint(x, y, style) {
-        let xSize = 5;
-        let ySize = 5;
-
-        this.ctx.fillStyle = style;
-
-        x -= xSize / 2;
-        y -= ySize / 2;
-
-        this.ctx.fillRect(x, y, xSize, ySize);
-    }
-
     maxValue(array) {
         return array.reduce( (a, b) => Math.max(a, b));
     }
@@ -255,40 +220,6 @@ class Stats {
 
     setYScale(pixels, units) {
         this.yScale = pixels / units;
-    }
-
-    drawVertMarkText(text = '', y) {
-        this.ctx.fillText(text, 0, y);
-    }
-
-    drawHorMarkText(text = '', x) {
-        const padBottom = this.heightCanvas + 20;
-        this.ctx.fillText(text, x, padBottom);
-    }
-
-    drawVertMarkline(yStart) {
-        let xStart = 45;
-
-        let xEnd = 55;
-        let yEnd = yStart;
-
-        this.ctx.moveTo(xStart, yStart);
-        this.ctx.lineTo(xEnd, yEnd);
-
-        this.ctx.stroke();
-    }
-
-    drawHorMarkline(xStart) {
-        let padBottom = 10;
-        let yStart = this.heightCanvas + padBottom;
-
-        let xEnd = xStart;
-        let yEnd = yStart - 10;
-
-        this.ctx.moveTo(xStart, yStart);
-        this.ctx.lineTo(xEnd, yEnd);
-
-        this.ctx.stroke();
     }
 
     setSizeYMark(size) {
@@ -318,9 +249,8 @@ class Stats {
 
         this.setSizeXMark(this.numberXMark);
 
-        for (let i = 0; i <= this.numberXMark; i += 1) {
+        for (let i = 0; i < this.numberXMark; i += 1) {
             let x = i * this.sizeXMark + this.leftPadHorMark;
-
 
             xMarks.push(x);
         }
@@ -364,128 +294,44 @@ class Stats {
 
         this.sizeXMarkUnit = this.setXLen(min, max);
 
-        for (let i = min; i <= max; i += this.sizeXMarkUnit) {
-            marks.push(this.fixed(i, 3));
+        let len = this.numberXMark;
+        let x = min;
+
+        for (let i = 0; i < len; i += 1) {
+            x = i * this.sizeXMarkUnit;
+
+            marks.push(this.fixed(x, 3));
         }
 
         return marks;
     }
 
-    drawHorScaleMark(value, x) {
-        let len = value.length;
-
-        for (let i = 0; i < len; i += 1) {
-            this.drawHorMarkline(x[i]);
-
-            this.drawHorMarkText(value[i], x[i]);
-        }
-    }
-
-    drawVertScaleMark(value, y) {
-        let len = value.length;
-
-        for (let i = 0; i < len; i += 1) {
-            this.drawVertMarkline(y[i]);
-
-            this.drawVertMarkText(value[i], y[i]);
-        }
-    }
-
-    drawVertLine() {
-        const xPad = 50;
-        const yPad = 5;
-
-        const yEnd = this.heightCanvas + yPad;
-
-        return {
-            xBegin: xPad,
-            yBegin: xPad,
-            xEnd: xPad,
-            yEnd
-        };
-
-    }
-
-    drawHorLine() {
-        const xPad = 50;
-        const yPad = 5;
-
-        const yBegin = this.heightCanvas + yPad;
-        const xEnd = this.widthCanvas + xPad;
-
-        return {
-            xBegin: xPad,
-            yBegin,
-            xEnd,
-            yEnd: yBegin
-        };
-    }
-
-    drawLine(type) {
-        this.ctx.beginPath();
-
-        const lineType = {
-            vert: this.drawVertLine,
-            hor: this.drawHorLine
-        };
-
-        let option = lineType[type]();
-
-        let {xBegin, yBegin, xEnd, yEnd} = option;
-
-        this.ctx.moveTo(xBegin, yBegin);
-        this.ctx.lineTo(xEnd, yEnd);
-
-        this.ctx.stroke();
-    }
-
-    drawLabelSaveState(...args) {
-        this.saveState(this.drawLabel)(...args)
-    }
-
     drawYaxis(min, max) {
-        this.drawLine('vert');
-        this.drawLabelSaveState('F(x)', 47, 40, '16px serif');
+        this.drawer.drawLine('vert');
+        this.drawer.drawLabelSaveState('F(x)', 0, this.heightCanvas - 40, '16px serif');
 
         if (max > min) {
             let valueYMarks = this.fillYValueMarks(max);
             let yMarks = this.getYPosition();
 
-            this.drawVertScaleMark(valueYMarks, yMarks);
+            this.drawer.drawVertScaleMark(valueYMarks, yMarks);
         } else {
             console.log('max <= min');
         }
     }
 
     drawXaxis(min, max) {
-        this.drawLine('hor');
-        this.drawLabelSaveState('x', this.widthCanvas, this.heightCanvas, '16px serif');
+        this.drawer.drawLine('hor');
+        this.drawer.drawLabelSaveState('x', 380, 0, '16px serif');
 
         if (max > min) {
             let valueXMarks = this.fillXValueMarks(min, max);
             let xMarks = this.getXPosition(min, max);
 
-            this.drawHorScaleMark(valueXMarks, xMarks);
+            this.drawer.drawHorScaleMark(valueXMarks, xMarks);
         } else {
             console.log('max <= min');
         }
-    }
-
-    init() {
-        this.canvas = document.getElementById('canvas');
-
-        if (canvas.getContext) {
-            this.ctx = canvas.getContext('2d');
-
-            let pad = 20;
-
-            this.widthCanvas = this.canvas.width - pad;
-            this.heightCanvas = this.canvas.height - pad;
-        }
-    }
-
-    clearDrawing() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     getStep(min, max, size) {
@@ -506,8 +352,6 @@ class Stats {
     }
 
     getSerieParams(serie) {
-        let last = serie.length - 1;
-
         let min = Math.min(...serie);
         let max = Math.max(...serie);
 
@@ -547,31 +391,11 @@ class Stats {
         }
     }
 
-    drawValueLine(x, y, style) {
-        this.ctx.strokeStyle = style;
-        this.ctx.beginPath();
-
-        this.ctx.moveTo(x, y);
-        this.ctx.lineTo(x, this.heightCanvas - this.bottomPadVerMark);
-
-        this.ctx.stroke();
-    }
-
-    drawValueLineSaveState(...args) {
-        this.saveState(this.drawValueLine)(...args)
-    }
-
-    drawLabel(text, x, y, style) {
-        this.ctx.font = style;
-
-        this.ctx.fillText(text, x, y);
-    }
-
     drawGraph(data) {
         let {value: X, prob: P} = data;
 
-        let xUnit =  this.sizeXMark / this.sizeXMarkUnit;
-        let yUnit =  this.sizeYMark / this.sizeYMarkUnit;
+        let xUnit =  Math.floor(this.sizeXMark / this.sizeXMarkUnit);
+        let yUnit =  Math.floor(this.sizeYMark / this.sizeYMarkUnit);
 
         let nShift = X[0];
 
@@ -579,18 +403,21 @@ class Stats {
             nShift *= -1;
         }
 
+        let number = X.length;
+
         P.map( (y, i) => {
             let x = (X[i] - nShift) * xUnit + this.leftPadHorMark;
 
             y = this.heightCanvas - this.bottomPadVerMark -  y * yUnit;
 
-            this.drawPoint(x, y);
-            this.saveState(this.drawValueLine)(x, y, 'grey');
+            this.drawer.drawPoint(x, y, number);
+            this.drawer.drawValueLineSaveState(x, y, 'grey');
+            // this.drawer.drawValueRectSaveState(x, y, 'grey', number);
         });
     }
 
     plot(data) {
-        this.clearDrawing();
+        this.drawer.clearDrawing();
 
         const options = this.getAxisesParams(data);
 
