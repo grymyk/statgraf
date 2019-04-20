@@ -46,40 +46,45 @@ h3 {
 #sizer {
   margin: 10px auto 0;
   padding: 0;
-  width: 130px;
-
-  #input_holder {
-    overflow: hidden;
-    width: 130px;
-    height: 40px;
-    line-height: 20px;
-    margin: 0;
-    font-size: 14px;
-
-    .begin {
-        float: left;
-    }
-
-    .end {
-        float: right;
-    }
-  }
+  width: 139px;
+  text-align: center;
+  height: 40px;
 
   input {
       display: block;
       margin: 0;
       padding: 0;
       cursor: pointer;
-      width: 130px;
+  }
+}
+
+#input_range_holder {
+  background: #ccf;
+  padding: 5px;
+}
+
+#output_holder {
+  width: 129px;
+
+  output {
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+  }
+}
+
+#input_holder {
+  overflow: hidden;
+  height: 50px;
+  line-height: 20px;
+  margin: 0;
+  font-size: 14px;
+
+  .begin {
+    float: left;
   }
 
-  #output_holder {
-    width: 130px;
-
-    output {
-      margin: 0;
-      padding: 0;
-      font-size: 18px;
-    }
+  .end {
+    float: right;
   }
 }
