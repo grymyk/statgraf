@@ -1,3 +1,8 @@
 .idea
 /node_modules
 package-lock.json
+
+/build
+/heroku/
+stats_graph-15.cdr
+

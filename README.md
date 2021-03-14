@@ -1,15 +1,18 @@
-# Stats -- Statistics Sandbox
+# Statgraf -- Statistics Sandbox
+
+## ToDo
+* URL: http://statgraf.herokuapp.com/
+
+* Error: index.js/ line: 48
+* set 'myko@grymyk.com' to CopyRight section
+* modules system like scandinaviantree
 
 ## Parameters
-Expected value Variance
-
-
-URL: https://stats.herokuapp.com/
+* Expected value Variance
+* Average
+* Random Distribution
 
 ## toDo
-* add range tool for change 'x'
-* add Poisson distribution
-* add Normal distribution
-
-## Tools
-javascript, canvas, webpack
+* Poisson Distribution
+* Normal Distribution
+* Matrix Usage

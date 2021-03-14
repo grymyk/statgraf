@@ -1,21 +1,18 @@
 class Drawer {
     constructor(props) {
-        this.canvas = props.element;
+        const { element, height, width } = props;
+
+        this.canvas = element;
 
         if (canvas.getContext) {
             this.ctx = canvas.getContext('2d');
 
-            this.widthCanvas = props.width;
-            this.heightCanvas = props.height;
+            this.widthCanvas = width;
+            this.heightCanvas = height;
 
-            this.drawHorLine = this.drawHorLine.bind(this);
-            this.drawVertLine = this.drawVertLine.bind(this);
-
-            this.drawLabel = this.drawLabel.bind(this);
-            this.drawPoint = this.drawPoint.bind(this);
-            this.drawValueLine = this.drawValueLine.bind(this);
-            this.drawDispersia = this.drawDispersia.bind(this);
-            this.drawValueRect = this.drawValueRect.bind(this);
+            this.xOrigin = 35;
+            this.yOrigin = 15;
+            this.bottomPadVerMark = 30;
         }
     }
 
@@ -23,10 +20,10 @@ class Drawer {
         this.ctx.beginPath();
         this.ctx.strokeStyle = style;
 
-        let xBegin = xAvr - sigmaPX;
-        let yBegin = yAvr;
-        let xEnd = xAvr + sigmaPX;
-        let yEnd = yAvr;
+        const xBegin = xAvr - sigmaPX;
+        const yBegin = yAvr;
+        const xEnd = xAvr + sigmaPX;
+        const yEnd = yAvr;
 
         this.ctx.moveTo(xBegin, yBegin);
         this.ctx.lineTo(xEnd, yEnd);
@@ -35,7 +32,7 @@ class Drawer {
     }
 
     drawVertMark(x, y) {
-        let size = 10;
+        const size = 10;
 
         this.ctx.moveTo(x, y - size);
         this.ctx.lineTo(x, y + size);
@@ -45,8 +42,8 @@ class Drawer {
         this.ctx.beginPath();
         this.ctx.strokeStyle = style;
 
-        let xRight = xAvr + sigmaPX;
-        let xLeft = xAvr - sigmaPX;
+        const xRight = xAvr + sigmaPX;
+        const xLeft = xAvr - sigmaPX;
 
         this.drawVertMark(xRight, yAvr);
         this.drawVertMark(xLeft, yAvr);
@@ -54,38 +51,38 @@ class Drawer {
         this.ctx.stroke();
     }
 
-    drawDispersia(xAvr, yAvr, sigmaPX, style) {
+    drawDispersia = (xAvr, yAvr, sigmaPX, style) => {
         this.drawHorlineDisp(xAvr, yAvr, sigmaPX, style);
 
         this.drawVertMarks(xAvr, yAvr, sigmaPX, style)
-    }
+    };
 
     drawDispersiaSaveState(...args) {
         this.saveState(this.drawDispersia)(...args)
     }
 
-    drawValueLine(x, y, style) {
+    drawValueLine = (x, y, style) => {
         this.ctx.strokeStyle = style;
         this.ctx.beginPath();
 
         this.ctx.moveTo(x, y);
-        this.ctx.lineTo(x, this.heightCanvas);
+        this.ctx.lineTo(x, this.heightCanvas - this.bottomPadVerMark);
 
         this.ctx.stroke();
-    }
+    };
 
-    drawValueRect(x, y, style, number) {
+    drawValueRect = (x, y, style, number) => {
         this.ctx.fillStyle = style;
         const total_width = 100;
 
-        let width = (total_width / number).toFixed(0);
+        const width = (total_width / number).toFixed(0);
 
-        let height = this.heightCanvas - y;
+        const height = this.heightCanvas - y;
 
         x -= width / 2;
 
         this.ctx.fillRect(x, y, width, height);
-    }
+    };
 
     drawValueRectSaveState(...args) {
         this.saveState(this.drawValueRect)(...args)
@@ -99,9 +96,9 @@ class Drawer {
         this.saveState(this.drawPoint)(...args)
     }
 
-    drawPoint(x, y, style) {
-        let xSize = 5;
-        let ySize = 5;
+    drawPoint = (x, y, style) => {
+        const xSize = 5;
+        const ySize = 5;
 
         this.ctx.fillStyle = style;
 
@@ -109,17 +106,17 @@ class Drawer {
         y -= ySize / 2;
 
         this.ctx.fillRect(x, y, xSize, ySize);
-    }
+    };
 
     drawVertMarkText(text = '', y) {
         this.ctx.fillText(text, 1, y+4);
     }
 
     drawVertMarkline(yStart) {
-        let xStart = 30;
+        const xStart = 30;
 
-        let xEnd = xStart + 10;
-        let yEnd = yStart;
+        const xEnd = xStart + 10;
+        const yEnd = yStart;
 
         this.ctx.moveTo(xStart, yStart);
         this.ctx.lineTo(xEnd, yEnd);
@@ -128,7 +125,7 @@ class Drawer {
     }
 
     drawVertScaleMark(value, y) {
-        let len = value.length;
+        const len = value.length;
 
         for (let i = 0; i < len; i += 1) {
             this.drawVertMarkline(y[i]);
@@ -138,10 +135,10 @@ class Drawer {
     }
 
     drawHorMarkline(xStart) {
-        let yStart = this.heightCanvas + 18;
+        const yStart = this.heightCanvas - 10;
 
-        let xEnd = xStart;
-        let yEnd = yStart - 10;
+        const xEnd = xStart;
+        const yEnd = yStart - 10;
 
         this.ctx.moveTo(xStart, yStart);
         this.ctx.lineTo(xEnd, yEnd);
@@ -150,12 +147,12 @@ class Drawer {
     }
 
     drawHorMarkText(text = '', x) {
-        const padBottom = this.heightCanvas + 28;
+        const padBottom = this.heightCanvas;
         this.ctx.fillText(text, x-2, padBottom);
     }
 
     drawHorScaleMark(value, x) {
-        let len = value.length;
+        const len = value.length;
 
         for (let i = 0; i < len; i += 1) {
             this.drawHorMarkline(x[i]);
@@ -164,40 +161,42 @@ class Drawer {
         }
     }
 
-    drawLabel(text, x, y, style) {
+    drawLabel = (text, x, y, style) => {
         y = this.heightCanvas - y;
 
         this.ctx.font = style;
         this.ctx.fillText(text, x, y);
-    }
+    };
 
     clearDrawing() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        const { width, height } = this.canvas;
+
+        this.ctx.clearRect(0, 0, width, height);
     }
 
-    drawVertLine() {
-        const yEnd = this.heightCanvas + 14;
-        const xPad = 35;
+    drawVertLine = () => {
+        const yEnd = this.heightCanvas - this.yOrigin;
+        const xPad = this.xOrigin;
 
         return {
             xBegin: xPad,
-            yBegin: 50,
+            yBegin: 30,
             xEnd: xPad,
             yEnd
         };
-    }
+    };
 
-    drawHorLine() {
+    drawHorLine = () => {
         const xEnd = this.widthCanvas;
-        const yBegin = this.heightCanvas + 13;
+        const yBegin = this.heightCanvas - this.yOrigin;
 
         return {
-            xBegin: 35,
+            xBegin: this.xOrigin,
             yBegin,
             xEnd,
             yEnd: yBegin
         };
-    }
+    };
 
     drawLine(type) {
         this.ctx.beginPath();
@@ -207,9 +206,9 @@ class Drawer {
             hor: this.drawHorLine
         };
 
-        let option = lineType[type]();
+        const option = lineType[type]();
 
-        let {xBegin, yBegin, xEnd, yEnd} = option;
+        const { xBegin, yBegin, xEnd, yEnd } = option;
 
         this.ctx.moveTo(xBegin, yBegin);
         this.ctx.lineTo(xEnd, yEnd);
@@ -232,4 +231,4 @@ class Drawer {
     }
 }
 
-export {Drawer};
+export default Drawer;
