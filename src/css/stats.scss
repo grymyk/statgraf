@@ -1,0 +1,65 @@
+#canvas_holder {
+  width: 320px;
+  margin: 0 auto;
+}
+
+#plot {
+  height: 48px;
+  width: 144px;
+  font-size: 24px;
+  border: 2px solid #000;
+  margin: 20px 0 0;
+}
+
+#plot:hover {
+  background: rgba(221, 221, 221, 0.5);
+  cursor: pointer;
+}
+
+.footer {
+  text-align: right;
+  margin: 40px 20px 0;
+}
+
+#sizer {
+  margin: 10px auto 0;
+  padding: 0;
+  width: 139px;
+  text-align: center;
+
+  input {
+      cursor: pointer;
+      margin: 0;
+      padding: 0;
+      border: none;
+  }
+}
+
+#input_range_holder {
+  background: #ccf;
+}
+
+#output_holder {
+  width: 129px;
+  margin: 0 auto;
+
+  output {
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+  }
+}
+
+#input_holder {
+  overflow: hidden;
+  margin: 0;
+  font-size: 14px;
+
+  .begin {
+    float: left;
+  }
+
+  .end {
+    float: right;
+  }
+}

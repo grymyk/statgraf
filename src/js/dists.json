@@ -1,0 +1,25 @@
+{
+    "custom": {},
+
+    "linear": {
+        "params": {
+            "b": 0,
+            "k": 0
+        }
+    },
+
+    "poisson": {
+        "params": {
+            "lambda": 5,
+            "success": 0
+        }
+    },
+
+    "polynomial": {
+        "params": {
+            "degree": 2,
+            "koef": 1
+        }
+    },
+    "random": {}
+}
