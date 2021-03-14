@@ -5,7 +5,10 @@ import './stats.scss';
 
 class Stats {
     constructor(props) {
-        let {min = 0, max = 10} = props;
+        let {
+            min = 0,
+            max = 10
+        } = props;
 
         this.min = min;
         this.max = max;
@@ -405,7 +408,7 @@ class Stats {
 
         let number = X.length;
 
-        P.map( (y, i) => {
+        P.forEach( (y, i) => {
             let x = (X[i] - nShift) * xUnit + this.leftPadHorMark;
 
             y = this.heightCanvas - this.bottomPadVerMark -  y * yUnit;
